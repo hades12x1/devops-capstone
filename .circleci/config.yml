@@ -1,0 +1,70 @@
+version: 2.1
+
+commands:
+   destroy-environment:
+      description: Destroy front-end cloudformation stacks
+      parameters:
+         workflow_id:
+            type: string
+      steps:
+         - run:
+            name: Destroy frontend
+            when: on_fail
+            command: |
+               aws s3 rb s3://udapeople-<< parameters.workflow_id >> --force
+               aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
+
+jobs:
+   build:
+      docker:
+         - image: python:3.7.3-stretch
+      steps:
+         - checkout
+         - run:
+            name: Make install
+            command: |
+               cd nginx-christmas
+               make install
+
+   test:
+      docker:
+         - image: python:3.7.3-stretch
+      steps:
+         - checkout
+         - run:
+            name: Make install
+            command: |
+               cd nginx-christmas
+               make install
+         - run:
+            name: Lint html
+            command: |
+               cd nginx-christmas
+               make lint
+
+   docker-build:
+      docker:
+         - image: cimg/go:1.17
+      working_directory: ~/repo
+      steps:
+         - checkout
+         - setup_remote_docker:
+            version: 20.10.14
+            docker_layer_caching: true
+         - run:
+            name: build and tag docker hub
+            command: |
+               cd nginx-christmas
+               docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
+               docker build -t nginx-christmas:latest .
+               docker tag nginx-christmas:latest ${DOCKERHUB_USERNAME}/nginx-christmas:latest
+               docker push ${DOCKERHUB_USERNAME}/nginx-christmas:latest
+
+workflows:
+   capstone:
+      jobs:
+         - build
+         - test:
+            requires: [build]
+         - docker-build:
+            requires: [test]
