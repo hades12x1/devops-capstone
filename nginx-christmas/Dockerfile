@@ -6,5 +6,6 @@ RUN chmod -R a+w /var/cache/nginx/ \
 
 COPY conf_nginx.conf /etc/nginx/conf.d/
 COPY index.html /usr/share/nginx/html/
+COPY style.css /usr/share/nginx/html/
 EXPOSE 8080
 USER nginx
