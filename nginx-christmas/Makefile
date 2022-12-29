@@ -4,4 +4,3 @@ install:
 	pip install html_linter
 lint:
 	./hadolint Dockerfile
-	html_lint.py index.html
