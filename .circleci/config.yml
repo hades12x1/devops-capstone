@@ -56,6 +56,113 @@ jobs:
                docker tag nginx-christmas:latest ${DOCKERHUB_USERNAME}/nginx-christmas:latest
                docker push ${DOCKERHUB_USERNAME}/nginx-christmas:latest
 
+   deploy-infrastructure:
+      docker:
+         - image: amazon/aws-cli:latest
+      working_directory: ~/repo
+      steps:
+         - checkout
+         - run:
+            name: Ensure front-end infrastructure exist
+            command: |
+               aws cloudformation deploy \
+               --template-file .circleci/files/frontend.yml \
+               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
+               --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
+         - destroy-environment:
+            workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+   deploy-frontend:
+      docker:
+         - image: amazon/aws-cli
+      working_directory: ~/repo
+      steps:
+         - checkout
+         - run:
+            name: Deploy frontend objects
+            command: |
+               aws s3 sync nginx-christmas s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
+         - destroy-environment:
+            workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+      smoke-test:
+      docker:
+         - image: python:3.7-alpine3.11
+      steps:
+         - checkout
+         - run:
+            name: Install dependencies
+            command: |
+               apk add curl
+         - run:
+            name: Frontend smoke test
+            command: |
+               # your code here
+               URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/"            
+               if curl -s ${URL} | grep "NGINX Logo"
+               then
+                  return 0
+               else
+                  return 1
+               fi
+         - destroy-environment:
+            workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+   cloudfront-update:
+      docker:
+         - image: amazon/aws-cli
+      steps:
+         - checkout
+         - run:
+            name: Save Old Workflow ID to kvdb.io
+            command: |
+               export OLD_WORKFLOW_ID=$(aws cloudformation \
+                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                     --no-paginate --output text)
+               echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
+               curl https://kvdb.io/9B6earijytWR5tL1bU197z/old_workflow_id -d "${OLD_WORKFLOW_ID}"
+         - run:
+            name: Update cloudfront distribution
+            command: |
+               echo ${CIRCLE_WORKFLOW_ID:0:7}
+               aws cloudformation deploy \
+               --template-file .circleci/files/cloudfront.yml \
+               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+               --stack-name udapeople-cloudfont 
+         - destroy-environment:
+            workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+   cleanup:
+      docker:
+         - image: amazon/aws-cli
+      steps:
+         - checkout
+         - run:
+            name: Get old stack workflow id
+            command: |
+               export OldWorkflowID=$(curl --insecure https://kvdb.io/9B6earijytWR5tL1bU197z/old_workflow_id)
+               echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
+               # Fetch the stack names
+               export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+               echo Stack names= "${STACKS[@]}"
+
+               if [ -z "$var" ]
+               then
+                  echo "---- Nothing Clean Up ----"
+               else
+                  if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+                  then
+                     echo "=> Clean................."
+                     echo bucket= "s3://udapeople-${OldWorkflowID}"
+                     aws s3 rb "s3://udapeople-${OldWorkflowID}" --force
+                     aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                  else
+                     echo "---- Nothing Clean Up ----"
+                  fi
+               fi
+
 workflows:
    capstone:
       jobs:
@@ -64,3 +171,16 @@ workflows:
             requires: [build]
          - docker-build:
             requires: [test]
+         - deploy-infrastructure:
+            requires: [docker-build]
+            filters:
+               branches:
+                  only: [main]
+         - deploy-frontend:
+            requires: [deploy-infrastructure]
+         - smoke-test:
+            requires: [deploy-frontend]
+         - cloudfront-update:
+            requires: [smoke-test]
+         - cleanup:
+            requires: [cloudfront-update]
