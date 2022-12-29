@@ -82,7 +82,7 @@ jobs:
          - run:
             name: Deploy frontend objects
             command: |
-               aws s3 sync nginx-hello s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
+               aws s3 sync nginx-christmas s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
          - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
