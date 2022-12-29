@@ -32,13 +32,9 @@ jobs:
       steps:
          - checkout
          - run:
-            name: Make install
-            command: |
-               cd nginx-christmas
-               make install
-         - run:
             name: Lint html
             command: |
+               make install
                cd nginx-christmas
                make lint
 
