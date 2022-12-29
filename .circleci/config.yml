@@ -176,7 +176,7 @@ workflows:
             requires: [docker-build]
             filters:
                branches:
-                  only: [main]
+                  only: [master]
          - deploy-frontend:
             requires: [deploy-infrastructure]
          - smoke-test:
