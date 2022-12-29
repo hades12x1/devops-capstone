@@ -82,11 +82,11 @@ jobs:
          - run:
             name: Deploy frontend objects
             command: |
-               aws s3 sync nginx-christmas s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
+               aws s3 sync nginx-hello s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
          - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-      smoke-test:
+   smoke-test:
       docker:
          - image: python:3.7-alpine3.11
       steps:
@@ -96,7 +96,7 @@ jobs:
             command: |
                apk add curl
          - run:
-            name: Frontend smoke test
+            name: Frontend smoke test.
             command: |
                # your code here
                URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/"            
@@ -141,25 +141,26 @@ jobs:
          - run:
             name: Get old stack workflow id
             command: |
+               # Fetch the Old workflow ID
                export OldWorkflowID=$(curl --insecure https://kvdb.io/9B6earijytWR5tL1bU197z/old_workflow_id)
+               echo  OldWorkflowID:  "${OldWorkflowID}"
                echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
                # Fetch the stack names
                export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                      --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
                echo Stack names= "${STACKS[@]}"
-
                if [ -z "$var" ]
                then
-                  echo "---- Nothing Clean Up ----"
+                  echo "nothing to clean up........."
                else
                   if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
                   then
-                     echo "=> Clean................."
+                     echo "cleaning up ............."
                      echo bucket= "s3://udapeople-${OldWorkflowID}"
                      aws s3 rb "s3://udapeople-${OldWorkflowID}" --force
                      aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
                   else
-                     echo "---- Nothing Clean Up ----"
+                     echo "nothing to clean up........."
                   fi
                fi
 
