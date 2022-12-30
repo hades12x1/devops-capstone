@@ -1,6 +1,6 @@
 [![kcemenike](https://circleci.com/gh/hades12x1/devops-capstone.svg?style=svg)](https://app.circleci.com/pipelines/github/hades12x1/devops-capstone)
 
-# devops-capstone
+## devops-capstone
 CAPSTONE PROJECT
 
 ## General info
@@ -31,7 +31,7 @@ To run this project in CircleCI, you have to:
 * Change the build job from config.yml in order to include your DockerHub credentials, for example :
 
 ## Result 
-URL: https://d1gq4hi7793ln6.cloudfront.net/
+URL: https://d1kcyztmoepita.cloudfront.net/
 
 ```
 docker build -t nchuyen128/nginx-christmas .
