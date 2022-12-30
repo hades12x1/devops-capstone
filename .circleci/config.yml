@@ -151,16 +151,16 @@ jobs:
                echo Stack names= "${STACKS[@]}"
                if [ -z "$var" ]
                then
-                  echo "nothing to clean up........."
+                  echo "Nothing Clean........"
                else
                   if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
                   then
                      echo "cleaning up ............."
-                     echo bucket= "s3://udapeople1-${OldWorkflowID}"
-                     aws s3 rb "s3://udapeople1-${OldWorkflowID}" --force
+                     echo bucket= "s3://udapeople-${OldWorkflowID}"
+                     aws s3 rb "s3://udapeople-${OldWorkflowID}" --force
                      aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
                   else
-                     echo "nothing to clean up........."
+                     echo "Nothing Clean........"
                   fi
                fi
 

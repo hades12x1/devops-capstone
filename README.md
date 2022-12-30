@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/nchuyen128/devops-capstone.svg?style=svg)](https://circleci.com/gh/nchuyen128/devops-capstone)
+[![kcemenike](https://circleci.com/gh/hades12x1/devops-capstone.svg?style=svg)](https://app.circleci.com/pipelines/github/hades12x1/devops-capstone)
 
 # devops-capstone
 CAPSTONE PROJECT
