@@ -30,12 +30,12 @@ To run this project in CircleCI, you have to:
 * Configure enviroment variables AWS_DEAFULT_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, DOCKERHUB_PASSWORD, DOCKERHUB_USERNAME in your CircleCI account
 * Change the build job from config.yml in order to include your DockerHub credentials, for example :
 
+## Result 
+URL: https://d1gq4hi7793ln6.cloudfront.net/
+
 ```
 docker build -t nchuyen128/nginx-christmas .
 docker tag nginx-hello:latest ${DOCKERHUB_USERNAME}/nginx-christmas:latest
 docker push nchuyen128/nginx-hello
 
 ```
-
-## Result 
-URL: https://d1gq4hi7793ln6.cloudfront.net/
