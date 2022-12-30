@@ -11,8 +11,8 @@ commands:
             name: Destroy frontend
             when: on_fail
             command: |
-               aws s3 rb s3://udapeople-<< parameters.workflow_id >> --force
-               aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
+               aws s3 rb s3://udapeople1-<< parameters.workflow_id >> --force
+               aws cloudformation delete-stack --stack-name udapeople-frontend1-<< parameters.workflow_id >>
 
 jobs:
    build:
@@ -67,9 +67,9 @@ jobs:
             command: |
                aws cloudformation deploy \
                --template-file .circleci/files/frontend.yml \
-               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+               --stack-name "udapeople-frontend1-${CIRCLE_WORKFLOW_ID:0:7}" \
                --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
-               --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
+               --tags project=udapeople-frontend1-${CIRCLE_WORKFLOW_ID:0:7} \
          - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -82,7 +82,7 @@ jobs:
          - run:
             name: Deploy frontend objects
             command: |
-               aws s3 sync nginx-christmas s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
+               aws s3 sync nginx-christmas s3://udapeople1-${CIRCLE_WORKFLOW_ID:0:7}
          - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -99,7 +99,7 @@ jobs:
             name: Frontend smoke test.
             command: |
                # your code here
-               URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/"            
+               URL="http://udapeople1-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/"            
                if curl -s ${URL} | grep "ChuyenNS"
                then
                   return 0
@@ -129,7 +129,7 @@ jobs:
                aws cloudformation deploy \
                --template-file .circleci/files/cloudfront.yml \
                --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" 
+               --stack-name "udapeople-frontend1-${CIRCLE_WORKFLOW_ID:0:7}" 
          - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -141,7 +141,6 @@ jobs:
          - run:
             name: Get old stack workflow id
             command: |
-               # Fetch the Old workflow ID
                export OldWorkflowID=$(curl --insecure https://kvdb.io/5XsyoCcJAm9CPue12pG7GW/old_workflow_id)
                echo  OldWorkflowID:  "${OldWorkflowID}"
                echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
@@ -156,9 +155,9 @@ jobs:
                   if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
                   then
                      echo "cleaning up ............."
-                     echo bucket= "s3://udapeople-${OldWorkflowID}"
-                     aws s3 rb "s3://udapeople-${OldWorkflowID}" --force
-                     aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                     echo bucket= "s3://udapeople1-${OldWorkflowID}"
+                     aws s3 rb "s3://udapeople1-${OldWorkflowID}" --force
+                     aws cloudformation delete-stack --stack-name "udapeople-frontend1-${OldWorkflowID}"
                   else
                      echo "nothing to clean up........."
                   fi
