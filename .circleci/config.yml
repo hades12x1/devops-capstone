@@ -121,14 +121,14 @@ jobs:
                      list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                      --no-paginate --output text)
                echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
-               curl https://kvdb.io/FQcTqAem4R3thw44dKvneL/old_workflow_id -d "${OLD_WORKFLOW_ID}"
+               curl https://kvdb.io/3eFyX875S8NQPutRYzs9gq/old_workflow_id -d "${OLD_WORKFLOW_ID}"
          - run:
             name: Update cloudfront distribution
             command: |
                echo ${CIRCLE_WORKFLOW_ID:0:7}
                aws cloudformation deploy \
                --template-file .circleci/files/cloudfront.yml \
-               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
+               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
                --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" 
          - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -142,7 +142,7 @@ jobs:
             name: Get old stack workflow id
             command: |
                # Fetch the Old workflow ID
-               export OldWorkflowID=$(curl --insecure https://kvdb.io/FQcTqAem4R3thw44dKvneL/old_workflow_id)
+               export OldWorkflowID=$(curl --insecure https://kvdb.io/3eFyX875S8NQPutRYzs9gq/old_workflow_id)
                echo  OldWorkflowID:  "${OldWorkflowID}"
                echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
                # Fetch the stack names
