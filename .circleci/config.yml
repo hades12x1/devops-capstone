@@ -116,12 +116,13 @@ jobs:
          - checkout
          - run:
             name: Save Old Workflow ID to kvdb.io
+            # no_output_timeout: 30m
             command: |
                export OLD_WORKFLOW_ID=$(aws cloudformation \
                      list-exports --query "Exports[?Name==\`CTWorkflowID\`].Value" \
                      --no-paginate --output text)
                echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
-               curl insecure https://kvdb.io/5XsyoCcJAm9CPue12pG7GW/old_workflow_id -d "${OLD_WORKFLOW_ID}"
+               curl https://kvdb.io/5XsyoCcJAm9CPue12pG7GW/old_workflow_id -d "${OLD_WORKFLOW_ID}"
          - run:
             name: Update cloudfront distribution
             command: |
