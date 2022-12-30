@@ -68,7 +68,7 @@ jobs:
                aws cloudformation deploy \
                --template-file .circleci/files/frontend.yml \
                --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
+               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
                --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
          - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -115,7 +115,6 @@ jobs:
          - checkout
          - run:
             name: Save Old Workflow ID to kvdb.io
-            no_output_timeout: 18m
             command: |
                export OLD_WORKFLOW_ID=$(aws cloudformation \
                      list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
