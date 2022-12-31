@@ -31,8 +31,8 @@ To run this project in CircleCI, you have to:
 * Change the build job from config.yml in order to include your DockerHub credentials, for example :
 
 ## Result 
-URL S3: http://udapeople-72f13fd.s3-website-us-east-1.amazonaws.com/
-URL cloudfront: https://d253elvs0xec7i.cloudfront.net/
+URL S3: http://udapeople-20e367f.s3-website-us-east-1.amazonaws.com/
+URL cloudfront: https://d15j84p7cndd6v.cloudfront.net/
 
 ```
 docker build -t nchuyen128/nginx-christmas .
